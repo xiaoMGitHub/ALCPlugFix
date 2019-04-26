@@ -51,11 +51,11 @@ void fixAudio();
     if (self) {
         // Do here what you needs to be done to start things
         
-        // Change 'NSWorkspaceDidWakeNotification' to 'NSWorkspaceScreensDidWakeNotification'
+        // sleep wake
         [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self
                                                                selector: @selector(receiveWakeNote:)
                                                                    name: NSWorkspaceDidWakeNotification object: NULL];
-        
+        // screen unlock
         [[NSDistributedNotificationCenter defaultCenter] addObserver: self
                                                                selector: @selector(receiveWakeNote:)
                                                                    name: @"com.apple.screenIsUnlocked" object: NULL];

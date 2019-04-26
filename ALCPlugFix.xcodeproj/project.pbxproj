@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C761DB422710250004042C9 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C761DB322710250004042C9 /* AppKit.framework */; };
 		4CE328391DCA9A59002A53ED /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE328381DCA9A59002A53ED /* main.m */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4C761DB322710250004042C9 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		4CE328351DCA9A59002A53ED /* ALCPlugFix */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ALCPlugFix; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CE328381DCA9A59002A53ED /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -32,17 +34,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C761DB422710250004042C9 /* AppKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4C761DB222710250004042C9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4C761DB322710250004042C9 /* AppKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		4CE3282C1DCA9A59002A53ED = {
 			isa = PBXGroup;
 			children = (
 				4CE328371DCA9A59002A53ED /* ALCPlugFix */,
 				4CE328361DCA9A59002A53ED /* Products */,
+				4C761DB222710250004042C9 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -102,6 +114,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 4CE3282C1DCA9A59002A53ED;
@@ -246,6 +259,7 @@
 				4CE3283E1DCA9A59002A53ED /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

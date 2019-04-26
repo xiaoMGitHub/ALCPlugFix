@@ -9,6 +9,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreAudio/CoreAudio.h>
 #import <CoreFoundation/CoreFoundation.h>
+#import <AppKit/AppKit.h>
+
+
+void fixAudio();
 
 @protocol DaemonProtocol
 - (void)performWork;
@@ -46,6 +50,16 @@
     self = [super init];
     if (self) {
         // Do here what you needs to be done to start things
+        
+        // Change 'NSWorkspaceDidWakeNotification' to 'NSWorkspaceScreensDidWakeNotification'
+        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self
+                                                               selector: @selector(receiveWakeNote:)
+                                                                   name: NSWorkspaceDidWakeNotification object: NULL];
+        
+        [[NSDistributedNotificationCenter defaultCenter] addObserver: self
+                                                               selector: @selector(receiveWakeNote:)
+                                                                   name: @"com.apple.screenIsUnlocked" object: NULL];
+
     }
     return self;
 }
@@ -60,14 +74,24 @@
 - (void)performWork
 {
     // This method is called periodically to perform some routine work
-    //NSLog(@"performing work ...");
+    NSLog(@"Performing periodical work");
+    fixAudio();
+
 }
+- (void) receiveWakeNote: (NSNotification*) note
+{
+    NSLog(@"receiveSleepNote: %@", [note name]);
+    NSLog(@"Wake detected");
+    fixAudio();
+}
+
+
 @end
 
 # pragma mark Setup the daemon
 
-// Seconds runloop runs before performing work
-#define kRunLoopWaitTime 30.0
+// Seconds runloop runs before performing work in second.
+#define kRunLoopWaitTime 3600.0
 
 BOOL keepRunning = TRUE;
 
@@ -81,10 +105,20 @@ void sigHandler(int signo)
     }
 }
 
+void fixAudio(){
+    NSLog(@"Fixing...");
+    NSString *output1 = [@"hda-verb 0x18 SET_PIN_WIDGET_CONTROL 0x20" runAsCommand];
+    NSString *output2 = [@"hda-verb 0x1a SET_PIN_WIDGET_CONTROL 0x20" runAsCommand];
+}
+
+
+
+
+
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         NSLog(@"Headphones daemon running!");
-
+        
         signal(SIGHUP, sigHandler);
         signal(SIGTERM, sigHandler);
 
@@ -98,7 +132,8 @@ int main(int argc, const char * argv[]) {
             kAudioObjectPropertyScopeGlobal,
             kAudioObjectPropertyElementMaster
         };
-
+        
+        
         AudioObjectGetPropertyData(kAudioObjectSystemObject, &defaultAddr, 0, NULL, &defaultSize, &defaultDevice);
 
         AudioObjectPropertyAddress sourceAddr;
@@ -106,25 +141,15 @@ int main(int argc, const char * argv[]) {
         sourceAddr.mScope = kAudioDevicePropertyScopeOutput;
         sourceAddr.mElement = kAudioObjectPropertyElementMaster;
 
-        NSString *output1 = [@"hda-verb 0x18 SET_PIN_WIDGET_CONTROL 0x20" runAsCommand];
-        NSString *output2 = [@"hda-verb 0x1a SET_PIN_WIDGET_CONTROL 0x20" runAsCommand];
+        // The daemon will call 'performWork' func at start
+        //NSLog(@"Init fix");
+        //fixAudio();
 
         AudioObjectAddPropertyListenerBlock(defaultDevice, &sourceAddr, dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress * inAddresses) {
-
-            UInt32 bDataSourceId = 0;
-            UInt32 bDataSourceIdSize = sizeof(UInt32);
-            AudioObjectGetPropertyData(defaultDevice, inAddresses, 0, NULL, &bDataSourceIdSize, &bDataSourceId);
-            if (bDataSourceId == 'ispk') {
-                // Recognized as internal speakers
-                NSLog(@"Headphones removed! Fixing!");
-                NSString *output1 = [@"hda-verb 0x18 SET_PIN_WIDGET_CONTROL 0x20" runAsCommand];
-                NSString *output2 = [@"hda-verb 0x1a SET_PIN_WIDGET_CONTROL 0x20" runAsCommand];
-            } else if (bDataSourceId == 'hdpn') {
-                // Recognized as headphones
-                NSLog(@"Headphones inserted! Fixing!");
-                NSString *output1 = [@"hda-verb 0x18 SET_PIN_WIDGET_CONTROL 0x20" runAsCommand];
-                NSString *output2 = [@"hda-verb 0x1a SET_PIN_WIDGET_CONTROL 0x20" runAsCommand];
-            }
+            // Audio device have changed
+            NSLog(@"Audio device changed!");
+            fixAudio();
+        
         });
 
         while (keepRunning) {

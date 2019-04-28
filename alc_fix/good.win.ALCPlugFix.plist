@@ -14,5 +14,8 @@
     <true/>
     <key>ServiceIPC</key>
     <false/>
+	<!--Shuold be directory that hda-verb at-->
+	<key>WorkingDirectory</key>
+	<string>/user/local/bin/</string>
 </dict>
 </plist>

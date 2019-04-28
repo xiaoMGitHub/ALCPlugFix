@@ -13,6 +13,7 @@
 
 
 void fixAudio();
+NSString *binPrefix;
 
 @protocol DaemonProtocol
 - (void)performWork;
@@ -107,8 +108,8 @@ void sigHandler(int signo)
 
 void fixAudio(){
     NSLog(@"Fixing...");
-    NSString *output1 = [@"hda-verb 0x18 SET_PIN_WIDGET_CONTROL 0x22" runAsCommand];
-    NSString *output2 = [@"hda-verb 0x21 SET_UNSOLICITED_ENABLE 0x83" runAsCommand];
+    NSString *output1 = [[binPrefix stringByAppendingString:@"hda-verb 0x18 SET_PIN_WIDGET_CONTROL 0x22"] runAsCommand];
+    NSString *output2 = [[binPrefix stringByAppendingString:@"hda-verb 0x21 SET_UNSOLICITED_ENABLE 0x83"] runAsCommand];
 }
 
 
@@ -118,7 +119,8 @@ void fixAudio(){
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         NSLog(@"Headphones daemon running!");
-        
+        binPrefix = @"";
+
         signal(SIGHUP, sigHandler);
         signal(SIGTERM, sigHandler);
 
@@ -132,18 +134,24 @@ int main(int argc, const char * argv[]) {
             kAudioObjectPropertyScopeGlobal,
             kAudioObjectPropertyElementMaster
         };
-        
-        
+
+
+        NSFileManager *filemgr;
+        filemgr = [[NSFileManager alloc] init];
+
+        if ([filemgr fileExistsAtPath:@"./hda-verb"]){
+            // hda-verb at work dir
+            NSLog(@"Found had-verb in work dir");
+            binPrefix = [filemgr.currentDirectoryPath stringByAppendingString:@"/"];
+        }
+        NSLog(@"Current Directory %@", filemgr.currentDirectoryPath);
+
         AudioObjectGetPropertyData(kAudioObjectSystemObject, &defaultAddr, 0, NULL, &defaultSize, &defaultDevice);
 
         AudioObjectPropertyAddress sourceAddr;
         sourceAddr.mSelector = kAudioDevicePropertyDataSource;
         sourceAddr.mScope = kAudioDevicePropertyScopeOutput;
         sourceAddr.mElement = kAudioObjectPropertyElementMaster;
-
-        // The daemon will call 'performWork' func at start
-        //NSLog(@"Init fix");
-        //fixAudio();
 
         AudioObjectAddPropertyListenerBlock(defaultDevice, &sourceAddr, dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress * inAddresses) {
             // Audio device have changed

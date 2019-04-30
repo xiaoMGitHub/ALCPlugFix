@@ -92,7 +92,7 @@ NSString *binPrefix;
 # pragma mark Setup the daemon
 
 // Seconds runloop runs before performing work in second.
-#define kRunLoopWaitTime 3600.0
+#define kRunLoopWaitTime 0.0
 
 BOOL keepRunning = TRUE;
 
@@ -126,6 +126,20 @@ int main(int argc, const char * argv[]) {
 
         ALCPlugFix *task = [[ALCPlugFix alloc] init];
 
+        // Check hda-verb location
+        NSFileManager *filemgr;
+        filemgr = [[NSFileManager alloc] init];
+
+        if ([filemgr fileExistsAtPath:@"./hda-verb"]){
+            // hda-verb at work dir
+            NSLog(@"Found had-verb in work dir");
+            binPrefix = [filemgr.currentDirectoryPath stringByAppendingString:@"/"];
+        }else
+            NSLog(@"Current Directory %@", filemgr.currentDirectoryPath);
+
+        fixAudio();
+
+        // Audio Listener setup
         AudioDeviceID defaultDevice = 0;
         UInt32 defaultSize = sizeof(AudioDeviceID);
 
@@ -136,35 +150,39 @@ int main(int argc, const char * argv[]) {
         };
 
 
-        NSFileManager *filemgr;
-        filemgr = [[NSFileManager alloc] init];
-
-        if ([filemgr fileExistsAtPath:@"./hda-verb"]){
-            // hda-verb at work dir
-            NSLog(@"Found had-verb in work dir");
-            binPrefix = [filemgr.currentDirectoryPath stringByAppendingString:@"/"];
-        }
-        NSLog(@"Current Directory %@", filemgr.currentDirectoryPath);
-
-        AudioObjectGetPropertyData(kAudioObjectSystemObject, &defaultAddr, 0, NULL, &defaultSize, &defaultDevice);
-
         AudioObjectPropertyAddress sourceAddr;
         sourceAddr.mSelector = kAudioDevicePropertyDataSource;
         sourceAddr.mScope = kAudioDevicePropertyScopeOutput;
         sourceAddr.mElement = kAudioObjectPropertyElementMaster;
 
-        AudioObjectAddPropertyListenerBlock(defaultDevice, &sourceAddr, dispatch_get_global_queue (DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress * inAddresses) {
-            // Audio device have changed
-            NSLog(@"Audio device changed!");
-            fixAudio();
-        
-        });
+        OSStatus osStatus;
 
-        while (keepRunning) {
-            [task performWork];
-            CFRunLoopRunInMode(kCFRunLoopDefaultMode, kRunLoopWaitTime, false);
-        }
+        do {
+            AudioObjectGetPropertyData(kAudioObjectSystemObject, &defaultAddr, 0, NULL, &defaultSize, &defaultDevice);
+
+            osStatus = AudioObjectAddPropertyListenerBlock(defaultDevice, &sourceAddr, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress *inAddresses) {
+                // Audio device have changed
+                NSLog(@"Audio device changed!");
+                fixAudio();
+            });
+
+
+            if (osStatus != 0){
+                NSLog(@"ERROR: Something went wrong! Failed to add Audio Listener!");
+                NSLog(@"OS Status: %d",osStatus);
+                NSLog(@"Waiting 15 second...");
+                sleep(15);
+            } else
+                NSLog(@"Correctly added Audio Listener!");
+
+        }while(osStatus!=0);
+
+//        while (keepRunning) {
+//            [task performWork];
+//            CFRunLoopRunInMode(kCFRunLoopDefaultMode, kRunLoopWaitTime, false);
+//        }
 //        [task release];
+
 
         NSLog(@"Daemon exiting");
     }

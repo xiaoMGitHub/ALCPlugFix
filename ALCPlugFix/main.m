@@ -92,7 +92,7 @@ NSString *binPrefix;
 # pragma mark Setup the daemon
 
 // Seconds runloop runs before performing work in second.
-#define kRunLoopWaitTime 0.0
+#define kRunLoopWaitTime 7200.0
 
 BOOL keepRunning = TRUE;
 
@@ -137,8 +137,6 @@ int main(int argc, const char * argv[]) {
         }else
             NSLog(@"Current Directory %@", filemgr.currentDirectoryPath);
 
-        fixAudio();
-
         // Audio Listener setup
         AudioDeviceID defaultDevice = 0;
         UInt32 defaultSize = sizeof(AudioDeviceID);
@@ -170,17 +168,17 @@ int main(int argc, const char * argv[]) {
             if (osStatus != 0){
                 NSLog(@"ERROR: Something went wrong! Failed to add Audio Listener!");
                 NSLog(@"OS Status: %d",osStatus);
-                NSLog(@"Waiting 15 second...");
-                sleep(15);
+                NSLog(@"Waiting 10 second");
+                sleep(10);
             } else
                 NSLog(@"Correctly added Audio Listener!");
 
         }while(osStatus!=0);
 
-//        while (keepRunning) {
-//            [task performWork];
-//            CFRunLoopRunInMode(kCFRunLoopDefaultMode, kRunLoopWaitTime, false);
-//        }
+        while (keepRunning) {
+            [task performWork];
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, kRunLoopWaitTime, false);
+        }
 //        [task release];
 
 

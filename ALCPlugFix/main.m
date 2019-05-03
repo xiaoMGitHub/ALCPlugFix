@@ -137,6 +137,8 @@ int main(int argc, const char * argv[]) {
         }else
             NSLog(@"Current Directory %@", filemgr.currentDirectoryPath);
 
+        fixAudio();
+
         // Audio Listener setup
         AudioDeviceID defaultDevice = 0;
         UInt32 defaultSize = sizeof(AudioDeviceID);

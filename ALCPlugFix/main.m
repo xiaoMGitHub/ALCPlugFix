@@ -60,7 +60,10 @@ NSString *binPrefix;
         [[NSDistributedNotificationCenter defaultCenter] addObserver: self
                                                                selector: @selector(receiveWakeNote:)
                                                                    name: @"com.apple.screenIsUnlocked" object: NULL];
-
+        // Screen wake
+        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self
+                                                               selector: @selector(receiveWakeNote:)
+                                                                   name: NSWorkspaceScreensDidWakeNotification object: NULL];
     }
     return self;
 }
@@ -75,8 +78,8 @@ NSString *binPrefix;
 - (void)performWork
 {
     // This method is called periodically to perform some routine work
-    NSLog(@"Performing periodical work");
-    fixAudio();
+//    NSLog(@"Performing periodical work");
+//    fixAudio();
 
 }
 - (void) receiveWakeNote: (NSNotification*) note
@@ -92,7 +95,7 @@ NSString *binPrefix;
 # pragma mark Setup the daemon
 
 // Seconds runloop runs before performing work in second.
-#define kRunLoopWaitTime 7200.0
+#define kRunLoopWaitTime 14400.0
 
 BOOL keepRunning = TRUE;
 
@@ -101,8 +104,11 @@ void sigHandler(int signo)
     NSLog(@"sigHandler: Received signal %d", signo);
 
     switch (signo) {
-        case SIGTERM: keepRunning = FALSE; break; // SIGTERM means we must quit
-        default: break;
+        case SIGTERM || SIGKILL || SIGQUIT : // Now handle more signal to quit
+            keepRunning = FALSE;
+            break;
+        default:
+            break;
     }
 }
 
@@ -137,7 +143,6 @@ int main(int argc, const char * argv[]) {
         }else
             NSLog(@"Current Directory %@", filemgr.currentDirectoryPath);
 
-        fixAudio();
 
         // Audio Listener setup
         AudioDeviceID defaultDevice = 0;
@@ -155,6 +160,7 @@ int main(int argc, const char * argv[]) {
         sourceAddr.mScope = kAudioDevicePropertyScopeOutput;
         sourceAddr.mElement = kAudioObjectPropertyElementMaster;
 
+
         OSStatus osStatus;
 
         do {
@@ -168,14 +174,18 @@ int main(int argc, const char * argv[]) {
 
 
             if (osStatus != 0){
+                // OS Status 560947818 is 'normal' as we are trying to hook audio object before login screen.
                 NSLog(@"ERROR: Something went wrong! Failed to add Audio Listener!");
                 NSLog(@"OS Status: %d",osStatus);
-                NSLog(@"Waiting 10 second");
-                sleep(10);
+                NSLog(@"Waiting 7 second");
+                sleep(7);
             } else
                 NSLog(@"Correctly added Audio Listener!");
 
         }while(osStatus!=0);
+
+        // Fix at boot
+        fixAudio();
 
         while (keepRunning) {
             [task performWork];

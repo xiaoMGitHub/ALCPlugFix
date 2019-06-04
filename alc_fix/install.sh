@@ -1,5 +1,9 @@
 #!/bin/bash
-
+if [ ! -d "/usr/local/bin" ]; then
+	echo \'/usr/local/bin\' not found, creating one.
+	sudo mkdir -p -m 775 /usr/local/bin
+	sudo chown $USER:admin /usr/local/bin
+fi
 sudo cp ALCPlugFix /usr/local/bin/
 sudo chmod 755 /usr/local/bin/ALCPlugFix
 sudo chown $USER:admin /usr/local/bin/ALCPlugFix

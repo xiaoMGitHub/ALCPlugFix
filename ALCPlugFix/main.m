@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreAudio/CoreAudio.h>
-#import <CoreFoundation/CoreFoundation.h>
 #import <AppKit/AppKit.h>
 
 
@@ -55,15 +54,27 @@ NSString *binPrefix;
         // sleep wake
         [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self
                                                                selector: @selector(receiveWakeNote:)
-                                                                   name: NSWorkspaceDidWakeNotification object: NULL];
+                                                                   name: NSWorkspaceDidWakeNotification object: nil];
         // screen unlock
         [[NSDistributedNotificationCenter defaultCenter] addObserver: self
                                                                selector: @selector(receiveWakeNote:)
-                                                                   name: @"com.apple.screenIsUnlocked" object: NULL];
+                                                                   name: @"com.apple.screenIsUnlocked" object: nil];
+        // screen saver end
+        [[NSDistributedNotificationCenter defaultCenter] addObserver: self
+                                                            selector: @selector(receiveWakeNote:)
+                                                                name: @"com.apple.screensaver.didstop" object: nil];
         // Screen wake
         [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self
                                                                selector: @selector(receiveWakeNote:)
-                                                                   name: NSWorkspaceScreensDidWakeNotification object: NULL];
+                                                                   name: NSWorkspaceScreensDidWakeNotification object: nil];
+        // Switch to other user
+        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self
+                                                               selector: @selector(receiveWakeNote:)
+                                                                   name: NSWorkspaceSessionDidResignActiveNotification object: nil];
+        // Switch back to current user
+        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self
+                                                               selector: @selector(receiveWakeNote:)
+                                                                   name: NSWorkspaceSessionDidBecomeActiveNotification object: nil];
     }
     return self;
 }
@@ -78,7 +89,7 @@ NSString *binPrefix;
 - (void)performWork
 {
     // This method is called periodically to perform some routine work
-//    NSLog(@"Performing periodical work");
+    NSLog(@"Performing periodical work");
 //    fixAudio();
 
 }
@@ -95,17 +106,24 @@ NSString *binPrefix;
 # pragma mark Setup the daemon
 
 // Seconds runloop runs before performing work in second.
-#define kRunLoopWaitTime 14400.0
+#define kRunLoopWaitTime 7200.0 // 2hour
 
 BOOL keepRunning = TRUE;
+CFRunLoopRef runLoopRef;
 
 void sigHandler(int signo)
 {
     NSLog(@"sigHandler: Received signal %d", signo);
 
     switch (signo) {
-        case SIGTERM || SIGKILL || SIGQUIT : // Now handle more signal to quit
+        case SIGTERM:
+        case SIGKILL:
+        case SIGQUIT:
+        case SIGHUP:
+            // Now handle more signal to quit
+            NSLog(@"Exiting...");
             keepRunning = FALSE;
+            CFRunLoopStop(CFRunLoopGetCurrent()); // Kill current thread so we don't need to wait until next runloop call
             break;
         default:
             break;
@@ -124,11 +142,15 @@ void fixAudio(){
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        NSLog(@"Headphones daemon running!");
+
+        NSLog(@"ALCPlugFix v1.3");
+
         binPrefix = @"";
 
         signal(SIGHUP, sigHandler);
         signal(SIGTERM, sigHandler);
+        signal(SIGKILL, sigHandler);
+        signal(SIGQUIT, sigHandler);
 
         ALCPlugFix *task = [[ALCPlugFix alloc] init];
 
@@ -143,7 +165,7 @@ int main(int argc, const char * argv[]) {
         }else
             NSLog(@"Current Directory %@", filemgr.currentDirectoryPath);
 
-
+        NSLog(@"Headphones daemon running!");
         // Audio Listener setup
         AudioDeviceID defaultDevice = 0;
         UInt32 defaultSize = sizeof(AudioDeviceID);
@@ -192,9 +214,7 @@ int main(int argc, const char * argv[]) {
             CFRunLoopRunInMode(kCFRunLoopDefaultMode, kRunLoopWaitTime, false);
         }
 //        [task release];
-
-
-        NSLog(@"Daemon exiting");
+        NSLog(@"Daemon exited");
     }
     return 0;
 }

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4C761DB422710250004042C9 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C761DB322710250004042C9 /* AppKit.framework */; };
 		4CE328391DCA9A59002A53ED /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE328381DCA9A59002A53ED /* main.m */; };
+		D96DD8E9562DA5C656BFF568 /* README.MD in Sources */ = {isa = PBXBuildFile; fileRef = D96BFF009CB392050D064A88 /* README.MD */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,6 +28,7 @@
 		4C761DB322710250004042C9 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		4CE328351DCA9A59002A53ED /* ALCPlugFix */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ALCPlugFix; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CE328381DCA9A59002A53ED /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		D96BFF009CB392050D064A88 /* README.MD */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.MD; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 				4CE328371DCA9A59002A53ED /* ALCPlugFix */,
 				4CE328361DCA9A59002A53ED /* Products */,
 				4C761DB222710250004042C9 /* Frameworks */,
+				D96BFF009CB392050D064A88 /* README.MD */,
 			);
 			sourceTree = "<group>";
 		};
@@ -133,6 +136,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CE328391DCA9A59002A53ED /* main.m in Sources */,
+				D96DD8E9562DA5C656BFF568 /* README.MD in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

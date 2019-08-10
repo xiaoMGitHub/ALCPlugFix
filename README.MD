@@ -1,8 +1,8 @@
 ALCPlugFix
 -------------
-This is a improved version of ALCPlugFix from [goodwin](https://github.com/goodwin/ALCPlugFix).
+This is an improved version of ALCPlugFix from [goodwin](https://github.com/goodwin/ALCPlugFix).
 
-The original and this fork trie to fix headphone audio power state issue in non Apple sound card in macOS.
+The original and this fork tries to fix headphone audio power state issue in non Apple sound card in macOS.
 
 The improvement include:
 
@@ -15,7 +15,7 @@ The improvement include:
 
 Install
 ---
-By default it's code command is for Lenovo ThinkPads with Realtek ALC3232, you may need to change that in `fixAudio` function.
+By default it's code command is for Lenovo ThinkPads with Realtek ALC3232 Audio Codec with Combo Jack, you may need to change that in `fixAudio` function.
 
 Running `sh ./install.sh` will install to `/user/local/bin`.
 

@@ -15,7 +15,7 @@ The improvement include:
 
 Install
 ---
-By default it's code command is for Mi notebook pro, you may need to change that in `fixAudio` function.
+By default it's code command is for Lenovo ThinkPads with Realtek ALC3232, you may need to change that in `fixAudio` function.
 
 Running `sh ./install.sh` will install to `/user/local/bin`.
 

@@ -4,7 +4,7 @@ if [ ! -d "/usr/local/bin" ]; then
 	sudo mkdir -p -m 775 /usr/local/bin
 	sudo chown $USER:admin /usr/local/bin
 fi
-sudo cp ALCPlugFix /usr/local/bin/
+sudo cp ../build/Release/ALCPlugFix /usr/local/bin/
 sudo chmod 755 /usr/local/bin/ALCPlugFix
 sudo chown $USER:admin /usr/local/bin/ALCPlugFix
 sudo cp hda-verb /usr/local/bin/

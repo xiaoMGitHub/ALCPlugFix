@@ -132,8 +132,8 @@ void sigHandler(int signo)
 
 void fixAudio(){
     NSLog(@"Fixing...");
-    NSString *output1 = [[binPrefix stringByAppendingString:@"hda-verb 0x18 SET_PIN_WIDGET_CONTROL 0x22"] runAsCommand];
-    NSString *output2 = [[binPrefix stringByAppendingString:@"hda-verb 0x21 SET_UNSOLICITED_ENABLE 0x83"] runAsCommand];
+    NSString *output1 = [[binPrefix stringByAppendingString:@"hda-verb 0x1a SET_PIN_WIDGET_CONTROL 0x24"] runAsCommand];
+    NSString *output2 = [[binPrefix stringByAppendingString:@"hda-verb 0x15 SET_UNSOLICITED_ENABLE 0x83"] runAsCommand];
 }
 
 

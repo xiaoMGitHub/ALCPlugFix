@@ -106,7 +106,7 @@ NSString *binPrefix;
 # pragma mark Setup the daemon
 
 // Seconds runloop runs before performing work in second.
-#define kRunLoopWaitTime 7200.0 // 2hour
+#define kRunLoopWaitTime 14400.0 // 4hour
 
 BOOL keepRunning = TRUE;
 CFRunLoopRef runLoopRef;
@@ -120,6 +120,7 @@ void sigHandler(int signo)
         case SIGKILL:
         case SIGQUIT:
         case SIGHUP:
+        case SIGINT:
             // Now handle more signal to quit
             NSLog(@"Exiting...");
             keepRunning = FALSE;
@@ -143,7 +144,8 @@ void fixAudio(){
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
 
-        NSLog(@"ALCPlugFix v1.3");
+        NSLog(@"ALCPlugFix v1.4");
+        keepRunning = false;
 
         binPrefix = @"";
 
@@ -151,6 +153,7 @@ int main(int argc, const char * argv[]) {
         signal(SIGTERM, sigHandler);
         signal(SIGKILL, sigHandler);
         signal(SIGQUIT, sigHandler);
+        signal(SIGINT, sigHandler);
 
         ALCPlugFix *task = [[ALCPlugFix alloc] init];
 
@@ -182,18 +185,17 @@ int main(int argc, const char * argv[]) {
         sourceAddr.mScope = kAudioDevicePropertyScopeOutput;
         sourceAddr.mElement = kAudioObjectPropertyElementMaster;
 
+        AudioObjectPropertyListenerBlock audioObjectPropertyListenerBlock = ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress *inAddresses) {
+            // Audio device have changed
+            NSLog(@"Audio device changed!");
+            fixAudio();
+        };
 
         OSStatus osStatus;
 
         do {
             AudioObjectGetPropertyData(kAudioObjectSystemObject, &defaultAddr, 0, NULL, &defaultSize, &defaultDevice);
-
-            osStatus = AudioObjectAddPropertyListenerBlock(defaultDevice, &sourceAddr, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress *inAddresses) {
-                // Audio device have changed
-                NSLog(@"Audio device changed!");
-                fixAudio();
-            });
-
+            osStatus = AudioObjectAddPropertyListenerBlock(defaultDevice, &sourceAddr, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), audioObjectPropertyListenerBlock);
 
             if (osStatus != 0){
                 // OS Status 560947818 is 'normal' as we are trying to hook audio object before login screen.
@@ -208,12 +210,14 @@ int main(int argc, const char * argv[]) {
 
         // Fix at boot
         fixAudio();
-
-        while (keepRunning) {
+        do{
             [task performWork];
             CFRunLoopRunInMode(kCFRunLoopDefaultMode, kRunLoopWaitTime, false);
-        }
+        }while (keepRunning);
 //        [task release];
+
+        OSStatus removeStatus = AudioObjectRemovePropertyListenerBlock(defaultDevice, &sourceAddr, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),audioObjectPropertyListenerBlock);
+        NSLog(@"Listener removed with status: %d",removeStatus);
         NSLog(@"Daemon exited");
     }
     return 0;

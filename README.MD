@@ -8,7 +8,7 @@ The original and this fork tries to fix headphone audio power state issue in non
 The improvement include:
 
  - Refactor
- - **Add listener when sleep/wake**
+ - Add listener when sleep/wake
  - Fix on sleep wake
  - Let you choose `hda-verb` so it don't need be in `$PATH`
  - Enable launching as LauchDaemon

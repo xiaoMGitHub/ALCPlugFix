@@ -53,5 +53,5 @@ Credits
 
 - Goodwin for creating the Software
 - Menchen for the refactoring and new features
-- @joshuaseltzer for creating new install.sh and uninstall.sh
-- @Sniki for maintaining the software
+- Joshuaseltzer for creating new install.sh and uninstall.sh
+- Sniki for maintaining the software

@@ -13,6 +13,8 @@ The improvement include:
  - Let you choose `hda-verb` so it don't need be in `$PATH`
  - Enable launching as LauchDaemon
  - Bug fix
+ - Install.sh script with update support
+ - Uninstall.sh to uninstall ALCPlugFix
 
 Install
 -------
@@ -45,3 +47,11 @@ Add following to launchDaemon file to log to `/tmp/ALCPlugFix.log`, _(or use `lo
 	<key>StandardErrorPath</key>
 	<string>/tmp/ALCPlugFix.log</string>
 ```
+
+Credits
+-----
+
+- Goodwin for creating the Software
+- Menchen for the refactoring and new features
+- @joshuaseltzer for creating new install.sh and uninstall.sh
+- @Sniki for maintaining the software

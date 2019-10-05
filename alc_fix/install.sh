@@ -1,12 +1,19 @@
 #!/bin/bash
 
-echo "Installing ALCPlugFix..."
-
 DAEMON_PATH=/Library/LaunchDaemons/
 BIN_PATH=/usr/bin/
 DAEMON_FILE=good.win.ALCPlugFix.plist
 VERB_FILE=hda-verb
 FIX_FILE=ALCPlugFix
+
+echo "Installing ALCPlugFix.  Root user is required."
+
+# check if the root filesystem is writeable (starting with macOS 10.15 Catalina, the root filesystem is read-only by default)
+if sudo test ! -w "/"; then
+    echo "Root filesystem is not writeable.  Remounting as read-write and restarting Finder."
+    mount -uw /
+    killall Finder
+fi
 
 # stop the daemon if it's already running
 if sudo launchctl list | grep --quiet ALCPlugFix; then

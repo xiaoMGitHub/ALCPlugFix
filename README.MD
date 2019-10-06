@@ -15,6 +15,7 @@ The improvement include:
  - Bug fix
  - Install.sh script with update support
  - Uninstall.sh to uninstall ALCPlugFix
+ - macOS Catalina support
 
 Install
 -------

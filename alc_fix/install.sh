@@ -6,15 +6,7 @@ DAEMON_FILE=good.win.ALCPlugFix.plist
 VERB_FILE=hda-verb
 FIX_FILE=ALCPlugFix
 
-echo "Installing ALCPlugFix.  Root user is required."
-
-# This is not necessary anymore with latest version as read-write is not required if we install into usr/local/bin
-# check if the root filesystem is writeable (starting with macOS 10.15 Catalina, the root filesystem is read-only by default)
-#if sudo test ! -w "/"; then
-    #echo "Root filesystem is not writeable.  Remounting as read-write and restarting Finder."
-    #sudo mount -uw /
-    #sudo killall Finder
-#fi
+echo "Installing ALCPlugFix v1.6"
 
 # check if the directory "usr/local/bin" exist, if not then create the directory
 

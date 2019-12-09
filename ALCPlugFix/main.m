@@ -144,7 +144,7 @@ void fixAudio(){
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
 
-        NSLog(@"ALCPlugFix v1.4");
+        NSLog(@"ALCPlugFix v1.6");
         keepRunning = false;
 
         binPrefix = @"";

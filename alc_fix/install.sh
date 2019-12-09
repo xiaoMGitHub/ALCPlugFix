@@ -8,11 +8,18 @@ FIX_FILE=ALCPlugFix
 
 echo "Installing ALCPlugFix.  Root user is required."
 
+# This is not necessary anymore with latest version as read-write is not required if we install into usr/local/bin
 # check if the root filesystem is writeable (starting with macOS 10.15 Catalina, the root filesystem is read-only by default)
-if sudo test ! -w "/"; then
-    echo "Root filesystem is not writeable.  Remounting as read-write and restarting Finder."
-    sudo mount -uw /
-    sudo killall Finder
+#if sudo test ! -w "/"; then
+    #echo "Root filesystem is not writeable.  Remounting as read-write and restarting Finder."
+    #sudo mount -uw /
+    #sudo killall Finder
+#fi
+
+# check if the directory "usr/local/bin" exist, if not then create the directory
+
+if [ ! -d "$BIN_PATH" ] ; then 
+mkdir "$BIN_PATH" ; 
 fi
 
 # stop the daemon if it's already running
@@ -23,7 +30,6 @@ fi
 
 # copy over the files to their respective locations (overwrite automatically if files exist)
 
-sudo mkdir usr/local/bin
 sudo cp -f ALCPlugFix $BIN_PATH
 sudo cp -f hda-verb $BIN_PATH
 sudo cp -f good.win.ALCPlugFix.plist $DAEMON_PATH

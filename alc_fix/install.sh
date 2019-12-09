@@ -22,6 +22,8 @@ if sudo launchctl list | grep --quiet ALCPlugFix; then
 fi
 
 # copy over the files to their respective locations (overwrite automatically if files exist)
+
+sudo mkdir usr/local/bin
 sudo cp -f ALCPlugFix $BIN_PATH
 sudo cp -f hda-verb $BIN_PATH
 sudo cp -f good.win.ALCPlugFix.plist $DAEMON_PATH

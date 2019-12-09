@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DAEMON_PATH=/Library/LaunchDaemons/
-BIN_PATH=/usr/bin/
+BIN_PATH=/usr/local/bin/
 DAEMON_FILE=good.win.ALCPlugFix.plist
 VERB_FILE=hda-verb
 FIX_FILE=ALCPlugFix

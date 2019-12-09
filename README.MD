@@ -21,7 +21,7 @@ Install
 -------
 By default it's code command is for Lenovo ThinkPad(s) with Realtek ALC3232 Audio Codec with Combo Jack, you may need to change that in `fixAudio` function.
 
-Running `sh ./install.sh` will install to `/user/bin`.
+Running `sh ./install.sh` will install to `/user/local/bin`.
 
 By default it search `hda-verb` in current work directory, if not found it will search in `$PATH` _(May not work when it is running from LaunchDaemon because it is using as root)_.
 

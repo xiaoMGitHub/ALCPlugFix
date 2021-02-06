@@ -133,7 +133,7 @@ void sigHandler(int signo)
 
 void fixAudio(){
     NSLog(@"Fixing...");
-    NSString *output1 = [[binPrefix stringByAppendingString:@"hda-verb 0x1a SET_PIN_WIDGET_CONTROL 0x24"] runAsCommand];
+    NSString *output1 = [[binPrefix stringByAppendingString:@"alc-verb 0x19 SET_PIN_WIDGET_CONTROL 0x20"] runAsCommand];
 }
 
 
@@ -156,13 +156,13 @@ int main(int argc, const char * argv[]) {
 
         ALCPlugFix *task = [[ALCPlugFix alloc] init];
 
-        // Check hda-verb location
+        // Check alc-verb location
         NSFileManager *filemgr;
         filemgr = [[NSFileManager alloc] init];
 
-        if ([filemgr fileExistsAtPath:@"./hda-verb"]){
-            // hda-verb at work dir
-            NSLog(@"Found had-verb in work dir");
+        if ([filemgr fileExistsAtPath:@"./alc-verb"]){
+            // alc-verb at work dir
+            NSLog(@"Found alc-verb in work dir");
             binPrefix = [filemgr.currentDirectoryPath stringByAppendingString:@"/"];
         }else
             NSLog(@"Current Directory %@", filemgr.currentDirectoryPath);
